@@ -1,7 +1,21 @@
 package com.bank.common.exception;
 
+import lombok.Getter;
+import org.springframework.http.HttpStatus;
+
+@Getter
 public class BusinessException extends RuntimeException{
-    public BusinessException(String message){
+
+    private final String errorCode;
+    private final HttpStatus httpStatus;
+
+    public BusinessException(String message, String errorCode, HttpStatus httpStatus){
         super(message);
+        this.errorCode = errorCode;
+        this.httpStatus = httpStatus;
+    }
+
+    public BusinessException(String message, String errorCode){
+        this(message,errorCode,HttpStatus.BAD_REQUEST);
     }
 }

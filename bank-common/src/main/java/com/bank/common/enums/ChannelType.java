@@ -1,4 +1,11 @@
 package com.bank.common.enums;
 
-public class ChannelType {
+public enum ChannelType {
+    WEB,
+    MOBILE_APP,
+    ATM,
+    BRANCH,
+    API,
+    IVR
+
 }

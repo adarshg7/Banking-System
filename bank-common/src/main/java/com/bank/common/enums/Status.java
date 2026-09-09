@@ -1,4 +1,9 @@
 package com.bank.common.enums;
 
-public class Status {
+public enum Status {
+    ACTIVE,
+    INACTIVE,
+    PENDING,
+    SUSPEND,
+    DELETED
 }

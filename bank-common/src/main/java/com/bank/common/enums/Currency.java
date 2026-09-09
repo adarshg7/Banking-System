@@ -1,4 +1,5 @@
 package com.bank.common.enums;
 
-public class Currency {
+public enum Currency {
+    INR, USD,EUR,GBP
 }
