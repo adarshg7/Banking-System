@@ -4,7 +4,6 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -16,26 +15,113 @@
     <artifactId>bank-core-platform</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
+    <name>bank-core-platform</name>
+    <description>Parent project for the Banking Core Platform</description>
+
     <modules>
         <module>bank-common</module>
-        <module>bank-account-service</module>
-        <module>bank-transaction-service</module>
         <module>bank-user-service</module>
+        <module>bank-app</module>
+        <module>bank-account-service</module>
+        <!--
+
+        <module>bank-transaction-service</module>
         <module>bank-notification-service</module>
         <module>bank-security-service</module>
         <module>bank-admin-service</module>
         <module>bank-reporting-service</module>
+        <module>bank-ledger-service</module>
         <module>bank-api-gateway</module>
         <module>bank-config-server</module>
         <module>bank-discovery-server</module>
-        <module>bank-app</module>
-        <module>bank-ledger-service</module>
+        -->
     </modules>
 
+    <!-- ─────────────────────────────────────────────────────────────────────
+         Properties
+         • java.version is read by spring-boot-starter-parent to set the
+           compiler source/target — no need to repeat maven.compiler.* here.
+         • Versions for libraries NOT in Spring Boot's BOM live here so every
+           child module references the same version via ${property}.
+    ───────────────────────────────────────────────────────────────────────── -->
     <properties>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
+        <java.version>21</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- MapStruct is not in Spring Boot's BOM — version managed here -->
+        <mapstruct.version>1.5.5.Final</mapstruct.version>
+        <lombok.version>1.18.30</lombok.version>
     </properties>
+
+    <!-- ─────────────────────────────────────────────────────────────────────
+         Dependency Management — versions ONLY, nothing is added automatically.
+         Each child module must declare what it actually needs in its own
+         <dependencies> block; it just won't need a <version> for anything
+         listed here.
+    ───────────────────────────────────────────────────────────────────────── -->
+    <dependencyManagement>
+        <dependencies>
+
+            <!-- Internal modules — version always in sync with project.version -->
+            <dependency>
+                <groupId>com.bank</groupId>
+                <artifactId>bank-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.bank</groupId>
+                <artifactId>bank-user-service</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- MapStruct runtime annotations -->
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct</artifactId>
+                <version>${mapstruct.version}</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>com.bank</groupId>
+                <artifactId>bank-account-service</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+    <!-- ─────────────────────────────────────────────────────────────────────
+         Plugin Management — centralises annotation-processor configuration.
+         Any child module that uses Lombok or MapStruct inherits this
+         automatically; no <build> block is needed in the child pom.
+         Rule: Lombok MUST be listed before MapStruct so it generates
+         getters/setters before MapStruct reads them.
+    ───────────────────────────────────────────────────────────────────────── -->
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                                <version>${lombok.version}</version>
+                            </path>
+                            <path>
+                                <groupId>org.mapstruct</groupId>
+                                <artifactId>mapstruct-processor</artifactId>
+                                <version>${mapstruct.version}</version>
+                            </path>
+                        </annotationProcessorPaths>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 
 </project>

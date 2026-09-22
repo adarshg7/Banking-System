@@ -1,4 +1,9 @@
 package com.bank.user.enums;
 
-public class UserStatus {
+public enum UserStatus {
+    ACTIVE,
+    INACTIVE,
+    SUSPENDED,
+    LOCKED,
+    DELETED
 }

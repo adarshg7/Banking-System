@@ -3,6 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>com.bank</groupId>
         <artifactId>bank-core-platform</artifactId>
@@ -10,50 +11,55 @@
     </parent>
 
     <artifactId>bank-common</artifactId>
+    <packaging>jar</packaging>
+    <name>bank-common</name>
+    <description>Shared kernel — constants, enums, exceptions, utils, and audit base classes used by all modules</description>
 
     <dependencies>
-        <!-- Needed for @Component, @Configuration if used later -->
+
+        <!-- Core Spring context — needed for @Component, @Value, SpringContext helper, etc. -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
 
-        <!-- For entity validation annotations -->
+        <!-- Bean Validation annotations (@NotNull, @Email, etc.) used on shared DTOs -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
-        <!-- JPA annotations for Auditable base entity -->
+        <!-- JPA annotations for the Auditable @MappedSuperclass -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
-        <!-- Lombok -->
+        <!-- spring-web — needed for @RestControllerAdvice, ResponseEntity in GlobalExceptionHandler -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+        </dependency>
+
+        <!-- Jackson — used by ApiResponse/ErrorResponse serialization -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+
+        <!-- Lombok — compile-only boilerplate generator; optional = not transitive -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
 
-        <!-- Jackson for JSON serialization in ApiResponse -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-            <version>6.1.5</version> <!-- Use the version matching your Spring setup -->
-        </dependency>
     </dependencies>
 
-    <properties>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+    <!--
+        No <build> block needed here.
+        The parent POM's <pluginManagement> already configures maven-compiler-plugin
+        with the Lombok annotation processor for all child modules.
+    -->
 
 </project>

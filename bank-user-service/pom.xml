@@ -3,6 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>com.bank</groupId>
         <artifactId>bank-core-platform</artifactId>
@@ -10,11 +11,56 @@
     </parent>
 
     <artifactId>bank-user-service</artifactId>
+    <packaging>jar</packaging>
+    <name>bank-user-service</name>
+    <description>User registration, profile management, KYC, and authentication for the Banking Core Platform</description>
 
-    <properties>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+    <dependencies>
+
+        <!-- Shared kernel: constants, exceptions, audit, utils, ApiResponse -->
+        <dependency>
+            <groupId>com.bank</groupId>
+            <artifactId>bank-common</artifactId>
+        </dependency>
+
+        <!-- Web layer -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- Persistence layer -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <!-- Password hashing (BCrypt) -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-crypto</artifactId>
+        </dependency>
+
+        <!-- MapStruct runtime annotations (@Mapper, @Mapping) -->
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+        </dependency>
+
+        <!-- Lombok — compile-only boilerplate generator; optional = not transitive -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+    </dependencies>
+
+    <!--
+        No <build> block needed here.
+        The parent POM's <pluginManagement> already configures maven-compiler-plugin
+        with both the Lombok and MapStruct annotation processors for all child modules,
+        in the correct order (Lombok first, then MapStruct).
+    -->
 
 </project>

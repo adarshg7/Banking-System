@@ -1,4 +1,9 @@
 package com.bank.user.enums;
 
-public class CustomerType {
+public enum CustomerType {
+    INDIVIDUAL,
+    JOINT,
+    MINOR,
+    BUSINESS,
+    CORPORATE
 }
