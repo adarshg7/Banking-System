@@ -48,3 +48,6 @@ target/
 *.class
 .idea/
 *.iml
+
+# Exclude Spring Boot application configuration
+application.properties
