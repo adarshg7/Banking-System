@@ -41,6 +41,11 @@
             <artifactId>bank-user-service</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.bank</groupId>
+            <artifactId>bank-account-service</artifactId>
+        </dependency>
+
         <!-- ── Infrastructure ───────────────────────────────────────────── -->
 
         <!-- MySQL JDBC driver — runtime only, not needed at compile time -->
