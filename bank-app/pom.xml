@@ -13,23 +13,19 @@
     <artifactId>bank-app</artifactId>
     <packaging>jar</packaging>
     <name>bank-app</name>
-    <description>Runnable Spring Boot application — assembles all active service modules into a single deployable JAR</description>
+    <description>Runnable Spring Boot application</description>
 
     <dependencies>
 
-        <!-- Web layer (embedded Tomcat + Spring MVC) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- Spring Security — required for SecurityFilterChain configuration -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
-
-        <!-- ── Internal service modules ─────────────────────────────────── -->
 
         <dependency>
             <groupId>com.bank</groupId>
@@ -46,16 +42,16 @@
             <artifactId>bank-account-service</artifactId>
         </dependency>
 
-        <!-- ── Infrastructure ───────────────────────────────────────────── -->
+        <dependency>
+            <groupId>com.bank</groupId>
+            <artifactId>bank-transaction-service</artifactId>
+        </dependency>
 
-        <!-- MySQL JDBC driver — runtime only, not needed at compile time -->
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
             <scope>runtime</scope>
         </dependency>
-
-        <!-- ── Testing ──────────────────────────────────────────────────── -->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -67,12 +63,6 @@
 
     <build>
         <plugins>
-            <!--
-                spring-boot-maven-plugin repackages the JAR into a self-contained
-                executable fat JAR. This is only needed in the runnable app module,
-                NOT in library modules (bank-common, bank-user-service, etc.) —
-                a fat JAR cannot be used as a Maven dependency by other modules.
-            -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
