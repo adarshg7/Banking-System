@@ -1,4 +1,8 @@
 package com.bank.transaction.enums;
 
-public class TransactionType {
+public enum TransactionType {
+    DEPOSIT,
+    WITHDRAWAL,
+    TRANSFER,
+    PAYMENT
 }

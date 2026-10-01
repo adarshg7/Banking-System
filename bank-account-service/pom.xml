@@ -3,6 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>com.bank</groupId>
         <artifactId>bank-core-platform</artifactId>
@@ -10,6 +11,9 @@
     </parent>
 
     <artifactId>bank-account-service</artifactId>
+    <packaging>jar</packaging>
+    <name>bank-account-service</name>
+    <description>Account opening, account holders, and balance management</description>
 
     <dependencies>
 
@@ -18,10 +22,14 @@
             <artifactId>bank-common</artifactId>
         </dependency>
 
-        <!-- Needs User entity/enums (CustomerType) for validation during account opening -->
         <dependency>
             <groupId>com.bank</groupId>
             <artifactId>bank-user-service</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.bank</groupId>
+            <artifactId>bank-security-service</artifactId>
         </dependency>
 
         <dependency>
@@ -45,17 +53,6 @@
             <optional>true</optional>
         </dependency>
 
-        <dependency>
-            <groupId>org.mapstruct</groupId>
-            <artifactId>mapstruct</artifactId>
-        </dependency>
-
     </dependencies>
-
-    <properties>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
 
 </project>

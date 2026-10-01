@@ -33,13 +33,13 @@ public class User {
     @Column(name = "first_name",nullable = false)
     private String firstName;
 
-    @Column(name="middle_name", nullable = false)
+    @Column(name="middle_name")
     private String middleName;
 
     @Column(name="last_name", nullable = false)
     private String lastName;
 
-    @Column(name="mother_name", nullable = false)
+    @Column(name="mother_name")
     private String motherName;
 
     @Column(name="father_name", nullable = false)

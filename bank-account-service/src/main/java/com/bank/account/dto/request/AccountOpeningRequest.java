@@ -14,9 +14,6 @@ import java.util.UUID;
 @Setter
 public class AccountOpeningRequest {
 
-    @NotNull(message = "Primary holder user ID is required")
-    private UUID primaryUserId;
-
     @NotNull(message = "Account type is required")
     private AccountType accountType;
 

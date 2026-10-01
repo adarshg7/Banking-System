@@ -70,6 +70,11 @@
             <version>2.5.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.bank</groupId>
+            <artifactId>bank-ledger-service</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

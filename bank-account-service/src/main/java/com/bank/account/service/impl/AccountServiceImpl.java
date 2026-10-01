@@ -17,6 +17,7 @@ import com.bank.account.repository.AccountRepository;
 import com.bank.account.service.AccountService;
 import com.bank.common.constants.AppConstants;
 import com.bank.common.util.IdGenerator;
+import com.bank.security.util.SecurityUtils;
 import com.bank.user.dto.response.UserResponse;
 import com.bank.user.enums.CustomerType;
 import org.springframework.stereotype.Service;
@@ -48,7 +49,8 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     public AccountResponse openAccount(AccountOpeningRequest request) {
-        UserResponse primaryUser = userLookupClient.getUser(request.getPrimaryUserId());
+        UUID currentUserId = SecurityUtils.getCurrentUserId();
+        UserResponse primaryUser = userLookupClient.getUser(currentUserId);
 
         Account account = buildAccount(request, primaryUser);
         account = accountRepository.save(account);

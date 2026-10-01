@@ -1,4 +1,11 @@
 package com.bank.transaction.enums;
 
-public class TransactionStatus {
+public enum TransactionStatus {
+    INITIATED,
+    PROCESSING,
+    PENDING_APPROVAL,
+    REJECTED,
+    SUCCESS,
+    FAILED,
+    REVERSED
 }

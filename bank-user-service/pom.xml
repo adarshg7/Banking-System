@@ -17,37 +17,36 @@
 
     <dependencies>
 
-        <!-- Shared kernel: constants, exceptions, audit, utils, ApiResponse -->
         <dependency>
             <groupId>com.bank</groupId>
             <artifactId>bank-common</artifactId>
         </dependency>
 
-        <!-- Web layer -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- Persistence layer -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
-        <!-- Password hashing (BCrypt) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-crypto</artifactId>
         </dependency>
 
-        <!-- MapStruct runtime annotations (@Mapper, @Mapping) -->
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
         </dependency>
 
-        <!-- Lombok — compile-only boilerplate generator; optional = not transitive -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -55,12 +54,5 @@
         </dependency>
 
     </dependencies>
-
-    <!--
-        No <build> block needed here.
-        The parent POM's <pluginManagement> already configures maven-compiler-plugin
-        with both the Lombok and MapStruct annotation processors for all child modules,
-        in the correct order (Lombok first, then MapStruct).
-    -->
 
 </project>
