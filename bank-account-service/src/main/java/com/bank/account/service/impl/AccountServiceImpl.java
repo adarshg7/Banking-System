@@ -5,6 +5,7 @@ import com.bank.account.dto.request.AccountOpeningRequest;
 import com.bank.account.dto.response.AccountResponse;
 import com.bank.account.entity.Account;
 import com.bank.account.entity.AccountHolder;
+import com.bank.account.entity.Branch;
 import com.bank.account.enums.AccountStatus;
 import com.bank.account.enums.AccountType;
 import com.bank.account.enums.HolderRelation;
@@ -14,7 +15,9 @@ import com.bank.account.exception.InvalidAccountOperationException;
 import com.bank.account.mapper.AccountMapper;
 import com.bank.account.repository.AccountHolderRepository;
 import com.bank.account.repository.AccountRepository;
+import com.bank.account.repository.BranchRepository;
 import com.bank.account.service.AccountService;
+import com.bank.account.util.AccountNumberGenerator;
 import com.bank.common.constants.AppConstants;
 import com.bank.common.util.IdGenerator;
 import com.bank.security.util.SecurityUtils;
@@ -35,15 +38,21 @@ public class AccountServiceImpl implements AccountService {
     private final AccountHolderRepository accountHolderRepository;
     private final UserLookupClient userLookupClient;
     private final AccountMapper accountMapper;
+    private final BranchRepository branchRepository;
+    private final AccountNumberGenerator accountNumberGenerator;
 
     public AccountServiceImpl(AccountRepository accountRepository,
                               AccountHolderRepository accountHolderRepository,
                               UserLookupClient userLookupClient,
-                              AccountMapper accountMapper) {
+                              AccountMapper accountMapper,
+                              BranchRepository branchRepository,
+                              AccountNumberGenerator accountNumberGenerator) {
         this.accountRepository = accountRepository;
         this.accountHolderRepository = accountHolderRepository;
         this.userLookupClient = userLookupClient;
         this.accountMapper = accountMapper;
+        this.accountNumberGenerator = accountNumberGenerator;
+        this.branchRepository = branchRepository;
     }
 
     @Override
@@ -58,15 +67,35 @@ public class AccountServiceImpl implements AccountService {
         List<AccountHolder> holders = buildHolders(request, primaryUser, account.getId());
         accountHolderRepository.saveAll(holders);
 
-        return accountMapper.toAccountResponse(account, holders);
+        Branch branch = getBranch(account.getBranchId());
+
+        return accountMapper.toAccountResponse(
+                account,
+                holders,
+                branch
+        );
     }
 
     @Override
     public AccountResponse getAccountById(UUID accountId) {
+
         Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new AccountNotFoundException("Account not found with id: " + accountId));
-        List<AccountHolder> holders = accountHolderRepository.findByAccountId(accountId);
-        return accountMapper.toAccountResponse(account, holders);
+                .orElseThrow(() ->
+                        new AccountNotFoundException(
+                                "Account not found with id: " + accountId
+                        )
+                );
+
+        List<AccountHolder> holders =
+                accountHolderRepository.findByAccountId(accountId);
+
+        Branch branch = getBranch(account.getBranchId());
+
+        return accountMapper.toAccountResponse(
+                account,
+                holders,
+                branch
+        );
     }
 
     @Override
@@ -74,35 +103,80 @@ public class AccountServiceImpl implements AccountService {
         Account account = accountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new AccountNotFoundException("Account not found: " + accountNumber));
         List<AccountHolder> holders = accountHolderRepository.findByAccountId(account.getId());
-        return accountMapper.toAccountResponse(account, holders);
+        Branch branch = getBranch(account.getBranchId());
+        return accountMapper.toAccountResponse(account, holders, branch);
     }
 
-    private Account buildAccount(AccountOpeningRequest request, UserResponse primaryUser) {
+    private Account buildAccount(
+            AccountOpeningRequest request,
+            UserResponse primaryUser
+    ) {
         validateCustomerTypeMatchesRequest(request, primaryUser);
 
         Account account = new Account();
-        account.setAccountNumber(generateUniqueAccountNumber());
+
+        // Find the requested branch
+        Branch branch = branchRepository
+                .findByBranchCode(request.getBranchCode())
+                .orElseThrow(() ->
+                        new InvalidAccountOperationException(
+                                "Branch not found: " + request.getBranchCode()
+                        )
+                );
+
+        account.setBranchId(branch.getId());
+
+        account.setAccountNumber(
+                generateUniqueAccountNumber(
+                        branch.getBranchCode(),
+                        request.getAccountType()
+                )
+        );
+
         account.setAccountType(request.getAccountType());
         account.setStatus(AccountStatus.ACTIVE);
+
         if (request.getCurrency() != null) {
             account.setCurrency(request.getCurrency());
         }
 
-        BigDecimal minBalance = resolveMinimumBalance(request.getAccountType());
+        BigDecimal minBalance =
+                resolveMinimumBalance(request.getAccountType());
+
         account.setMinimumBalance(minBalance);
 
-        BigDecimal initialDeposit = request.getInitialDeposit() != null ? request.getInitialDeposit() : BigDecimal.ZERO;
+        BigDecimal initialDeposit =
+                request.getInitialDeposit() != null
+                        ? request.getInitialDeposit()
+                        : BigDecimal.ZERO;
+
         if (initialDeposit.compareTo(minBalance) < 0) {
             throw new InvalidAccountOperationException(
-                    "Initial deposit (" + initialDeposit + ") is below the minimum balance requirement (" + minBalance + ") for " + request.getAccountType());
+                    "Initial deposit (" + initialDeposit
+                            + ") is below the minimum balance requirement ("
+                            + minBalance
+                            + ") for "
+                            + request.getAccountType()
+            );
         }
-        account.setBalance(initialDeposit);
-        account.setOperationMode(resolveOperationMode(request, primaryUser));
 
-        boolean isBusiness = primaryUser.getCustomerType() == CustomerType.BUSINESS
-                || primaryUser.getCustomerType() == CustomerType.CORPORATE;
-        account.setDailyTransferLimit(BigDecimal.valueOf(
-                isBusiness ? AppConstants.DAILY_TRANSFER_LIMIT_BUSINESS : AppConstants.DAILY_TRANSFER_LIMIT_INDIVIDUAL));
+        account.setBalance(initialDeposit);
+
+        account.setOperationMode(
+                resolveOperationMode(request, primaryUser)
+        );
+
+        boolean isBusiness =
+                primaryUser.getCustomerType() == CustomerType.BUSINESS
+                        || primaryUser.getCustomerType() == CustomerType.CORPORATE;
+
+        account.setDailyTransferLimit(
+                BigDecimal.valueOf(
+                        isBusiness
+                                ? AppConstants.DAILY_TRANSFER_LIMIT_BUSINESS
+                                : AppConstants.DAILY_TRANSFER_LIMIT_INDIVIDUAL
+                )
+        );
 
         return account;
     }
@@ -182,11 +256,28 @@ public class AccountServiceImpl implements AccountService {
         return holders;
     }
 
-    private String generateUniqueAccountNumber() {
+    private String generateUniqueAccountNumber(
+            String branchCode,
+            AccountType accountType
+    ) {
         String accountNumber;
+
         do {
-            accountNumber = IdGenerator.generateAccountNumber();
+            accountNumber = accountNumberGenerator.generate(
+                    branchCode,
+                    accountType
+            );
         } while (accountRepository.existsByAccountNumber(accountNumber));
+
         return accountNumber;
+    }
+
+    private Branch getBranch(UUID branchId) {
+        return branchRepository.findById(branchId)
+                .orElseThrow(() ->
+                        new InvalidAccountOperationException(
+                                "Branch not found: " + branchId
+                        )
+                );
     }
 }

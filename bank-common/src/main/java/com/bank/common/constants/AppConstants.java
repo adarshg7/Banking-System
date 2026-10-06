@@ -38,4 +38,6 @@ public final class AppConstants {
     public static final String TXN_REFERENCE_PREFIX = "TXN";
 
     public static final double MAKER_CHECKER_THRESHOLD = 50000.00;
+
+    public static final double SAVINGS_ANNUAL_INTEREST_RATE = 0.04;
 }

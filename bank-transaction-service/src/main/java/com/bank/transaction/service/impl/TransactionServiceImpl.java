@@ -30,6 +30,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
+import org.springframework.context.ApplicationEventPublisher;
+import com.bank.common.event.TransactionCompletedEvent;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -40,14 +42,17 @@ public class TransactionServiceImpl implements TransactionService {
     private final AccountLookupClient accountLookupClient;
     private final TransactionMapper transactionMapper;
     private final LedgerService ledgerService;
+    private final ApplicationEventPublisher eventPublisher;
 
     public TransactionServiceImpl(TransactionRepository transactionRepository,
                                   AccountLookupClient accountLookupClient,
-                                  TransactionMapper transactionMapper,LedgerService ledgerService) {
+                                  TransactionMapper transactionMapper,LedgerService ledgerService,
+                                  ApplicationEventPublisher eventPublisher) {
         this.transactionRepository = transactionRepository;
         this.accountLookupClient = accountLookupClient;
         this.transactionMapper = transactionMapper;
         this.ledgerService = ledgerService;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -78,6 +83,18 @@ public class TransactionServiceImpl implements TransactionService {
         transaction.setInitiatedByUserId(currentUserId);
 
         transaction = transactionRepository.save(transaction);
+
+        eventPublisher.publishEvent(new TransactionCompletedEvent(
+                transaction.getId(),
+                transaction.getTransactionReference(),
+                transaction.getTransactionType().name(),
+                transaction.getStatus().name(),
+                transaction.getFromAccountId(),
+                transaction.getToAccountId(),
+                transaction.getAmount(),
+                transaction.getInitiatedByUserId()
+        ));
+
         ledgerService.recordDeposit(transaction.getTransactionReference(), account.getId(), request.getAmount(), request.getDescription());
         return transactionMapper.toResponse(transaction);
     }
@@ -113,6 +130,17 @@ public class TransactionServiceImpl implements TransactionService {
         transaction.setInitiatedByUserId(currentUserId);
 
         transaction = transactionRepository.save(transaction);
+
+        eventPublisher.publishEvent(new TransactionCompletedEvent(
+                transaction.getId(),
+                transaction.getTransactionReference(),
+                transaction.getTransactionType().name(),
+                transaction.getStatus().name(),
+                transaction.getFromAccountId(),
+                transaction.getToAccountId(),
+                transaction.getAmount(),
+                transaction.getInitiatedByUserId()
+        ));
 
         ledgerService.recordWithdrawal(transaction.getTransactionReference(), account.getId(), request.getAmount(), request.getDescription());
 
@@ -168,6 +196,18 @@ public class TransactionServiceImpl implements TransactionService {
         // balanceAfter deliberately left null — money hasn't moved yet
 
         transaction = transactionRepository.save(transaction);
+
+        eventPublisher.publishEvent(new TransactionCompletedEvent(
+                transaction.getId(),
+                transaction.getTransactionReference(),
+                transaction.getTransactionType().name(),
+                transaction.getStatus().name(),
+                transaction.getFromAccountId(),
+                transaction.getToAccountId(),
+                transaction.getAmount(),
+                transaction.getInitiatedByUserId()
+        ));
+
         return transactionMapper.toResponse(transaction);
     }
 
@@ -202,6 +242,17 @@ public class TransactionServiceImpl implements TransactionService {
         transaction.setInitiatedByUserId(currentUserId);
 
         transaction = transactionRepository.save(transaction);
+
+        eventPublisher.publishEvent(new TransactionCompletedEvent(
+                transaction.getId(),
+                transaction.getTransactionReference(),
+                transaction.getTransactionType().name(),
+                transaction.getStatus().name(),
+                transaction.getFromAccountId(),
+                transaction.getToAccountId(),
+                transaction.getAmount(),
+                transaction.getInitiatedByUserId()
+        ));
 
         ledgerService.recordTransfer(transaction.getTransactionReference(), fromAccount.getId(),
                 toAccount.getId(), request.getAmount(), request.getDescription());

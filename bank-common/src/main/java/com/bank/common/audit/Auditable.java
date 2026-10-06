@@ -34,4 +34,6 @@ public abstract class Auditable {
     @LastModifiedBy
     @Column(name = "modified_by")
     private String modifiedBy;
+
+
 }

@@ -53,6 +53,11 @@
         </dependency>
 
         <dependency>
+            <groupId>com.bank</groupId>
+            <artifactId>bank-admin-service</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
             <scope>runtime</scope>
@@ -73,6 +78,11 @@
         <dependency>
             <groupId>com.bank</groupId>
             <artifactId>bank-ledger-service</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.bank</groupId>
+            <artifactId>bank-notification-service</artifactId>
         </dependency>
 
     </dependencies>

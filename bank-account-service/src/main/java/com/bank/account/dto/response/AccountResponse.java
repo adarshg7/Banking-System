@@ -24,4 +24,8 @@ public class AccountResponse {
     private Currency currency;
     private String ifscCode;
     private List<AccountHolderResponse> holders;
+
+    private UUID branchId;
+    private String branchName;
+
 }

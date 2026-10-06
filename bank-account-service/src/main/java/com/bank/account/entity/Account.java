@@ -64,4 +64,10 @@ public class Account extends Auditable {
 
     @Version
     private Long version;
+
+    @Column(name = "branch_id", nullable = false)
+    private UUID branchId;
+
+    @Column(name = "sequence_id", nullable = false, unique = true, updatable = false)
+    private Long sequenceId;
 }

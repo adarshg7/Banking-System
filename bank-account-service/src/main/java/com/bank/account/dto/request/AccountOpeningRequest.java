@@ -2,6 +2,7 @@ package com.bank.account.dto.request;
 
 import com.bank.account.enums.AccountType;
 import com.bank.common.enums.Currency;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,6 +17,9 @@ public class AccountOpeningRequest {
 
     @NotNull(message = "Account type is required")
     private AccountType accountType;
+
+    @NotBlank(message = "Branch code is required")
+    private String branchCode;
 
     private Currency currency;
 

@@ -26,11 +26,13 @@
         <module>bank-app</module>
         <module>bank-security-service</module>
         <module>bank-ledger-service</module>
-
-        <!--
+        <module>bank-admin-service</module>
         <module>bank-notification-service</module>
 
-        <module>bank-admin-service</module>
+
+        <!--
+
+
         <module>bank-reporting-service</module>
 
         <module>bank-api-gateway</module>
@@ -101,6 +103,18 @@
                 <groupId>com.bank</groupId>
                 <artifactId>bank-ledger-service</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.bank</groupId>
+                <artifactId>bank-admin-service</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.bank</groupId>
+                <artifactId>bank-notification-service</artifactId>
+                <version>1.0-SNAPSHOT</version>
             </dependency>
 
             <!-- Third-party libraries NOT covered by Spring Boot's BOM -->
